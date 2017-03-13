@@ -7,9 +7,12 @@
 (provide firsts)
 (provide insertR)
 (provide multiinsertR)
+(provide multiinsertL)
 (provide insertL)
 (provide subst)
 (provide subst2)
+(provide myplus)
+(provide mysub)
 
 ; lat is a list of atoms.
 
@@ -86,6 +89,19 @@
             [else (cons (car lat)
                         (multiinsertR new old (cdr lat)))])]))
 
+; Returns 'list' with 'new' inserted before each 'old'
+(: multiinsertL (-> Any Any (Listof Any) (Listof Any)))
+(define (multiinsertL new old lat)
+  (cond
+    [(null? lat) '()]
+    [else (cond
+            [(eq? old (car lat))
+             (cons new
+                   (cons old
+                         (multiinsertL new old (cdr lat))))]
+            [else (cons (car lat)
+                        (multiinsertL new old (cdr lat)))])]))
+
 ; Returns 'list' with 'new' inserted before the value 'old'
 (: insertL (-> Any Any (Listof Any) (Listof Any)))
 (define (insertL new old lat)
@@ -119,3 +135,27 @@
              (cons new (cdr lat))]
             [else (cons (car lat)
                         (subst2 new old1 old2 (cdr lat)))])]))
+
+; Add the smaller of n1|n2 to the larger
+(: myplus (-> Integer Integer Integer))
+(define (myplus n1 n2)
+  (cond
+    [(zero? n1) n2]
+    [(zero? n2) n1]
+    [else (cond
+            [(>= n2 n1)
+             (add1 (myplus (sub1 n1) n2))]
+            [else
+             (add1 (myplus n1 (sub1 n2)))])]))
+
+; Subtract the smaller of n1|n2 to the larger
+(: mysub (-> Integer Integer Integer))
+(define (mysub n1 n2)
+  (cond
+    [(zero? n1) n2]
+    [(zero? n2) n1]
+    [else (cond
+            [(>= n2 n1)
+             (sub1 (mysub (sub1 n1) n2))]
+            [else
+             (sub1 (mysub n1 (sub1 n2)))])]))
